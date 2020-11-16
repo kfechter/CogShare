@@ -1,11 +1,16 @@
 ﻿using CogShare.Utilities;
 using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 
 namespace CogShare.Domain.Entities
 {
     public class ApplicationUser : IdentityUser
     {
-       public string IdentityQR
+        public bool PublicBorrowerProfile { get; set; }
+
+        public List<ApplicationUser> Friends { get; set; }
+
+        public string IdentityQR
         {
             get
             {
