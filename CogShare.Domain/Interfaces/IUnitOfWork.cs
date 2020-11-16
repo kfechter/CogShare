@@ -8,7 +8,7 @@ namespace CogShare.Domain.Interfaces
     {
         IApplicationUserRepository Users { get; }
 
-        IRequestRepository Items { get; }
+        IItemRepository Items { get; }
 
         IRequestRepository Requests { get; }
 

@@ -11,6 +11,8 @@ namespace CogShare.EFCore
         {
         }
 
+        public DbSet<Item> Items { get; set; }
 
+        public DbSet<Request> Requests { get; set; }
     }
 }
