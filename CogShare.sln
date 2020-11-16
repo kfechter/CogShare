@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogShare.Domain", "CogShare
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogShare.EFCore", "CogShare.EFCore\CogShare.EFCore.csproj", "{3CC1192C-C10F-402A-943F-0A13F0427C58}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogShare.Utilities", "CogShare.Utilities\CogShare.Utilities.csproj", "{D70601FA-5CC3-4C1B-B688-7B9F50E9D8BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{3CC1192C-C10F-402A-943F-0A13F0427C58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CC1192C-C10F-402A-943F-0A13F0427C58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CC1192C-C10F-402A-943F-0A13F0427C58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D70601FA-5CC3-4C1B-B688-7B9F50E9D8BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D70601FA-5CC3-4C1B-B688-7B9F50E9D8BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D70601FA-5CC3-4C1B-B688-7B9F50E9D8BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D70601FA-5CC3-4C1B-B688-7B9F50E9D8BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
