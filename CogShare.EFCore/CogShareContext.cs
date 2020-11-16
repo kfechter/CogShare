@@ -11,6 +11,19 @@ namespace CogShare.EFCore
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<Request>()
+                .Property(s => s.Created)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            builder.Entity<Item>()
+                .Property(s => s.Created)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+        }
+
         public DbSet<Item> Items { get; set; }
 
         public DbSet<Request> Requests { get; set; }

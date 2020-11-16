@@ -1,17 +1,14 @@
-using CogShare.Data;
+using CogShare.Domain.Entities;
+using CogShare.Domain.Interfaces;
+using CogShare.EFCore;
+using CogShare.EFCore.Repositories;
+using CogShare.EFCore.UnitOfWork;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CogShare
 {
@@ -27,14 +24,29 @@ namespace CogShare
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddEntityFrameworkNpgsql().AddDbContext<CogShareContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("CogShareDBConnection"),
+                b => b.MigrationsAssembly("CogShare.EFCore")));
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddControllersWithViews();
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddEntityFrameworkStores<CogShareContext>();
+
+            // services.SwaggerGen(); // Enable for API
+
+            /*
+             services.AddTransient<IEmailSender, EmailSender>();
+             services.Configure<AuthMessageSenderOptions>(options => 
+                Configuration.GetSection("SendGridEmailSettings").Bind(options)
+             );
+            */
+
+            services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddTransient<IItemRepository, ItemRepository>();
+            services.AddTransient<IRequestRepository, RequestRepository>();
+            services.AddTransient<IApplicationUserRepository, ApplicationUserRepository>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+
+            services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +70,14 @@ namespace CogShare
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            /*
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Custos API V1");
+                });
+            */
 
             app.UseEndpoints(endpoints =>
             {
