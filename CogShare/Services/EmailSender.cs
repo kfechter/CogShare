@@ -15,15 +15,15 @@ namespace CogShare.Services
             Options = optionsAccessor.Value;
         }
 
-        public Task SendEmailAsync(string email, string subject, string message)
+        public Task SendEmailAsync(string email, string subject, string message, string emailUser = "CogShare Admin")
         {
-            return Execute(email, subject, message, Options.SMTPServer, Options.SMTPPort, Options.SMTPUser, Options.SMTPPassword);
+            return Execute(email, subject, message, Options.SMTPServer, Options.SMTPPort, Options.SMTPUser, Options.SMTPPassword, emailUser);
         }
 
-        public Task Execute(string email, string subject, string message, string smtpServer, int smtpPort, string smtpUser, string smtpPass)
+        public Task Execute(string email, string subject, string message, string smtpServer, int smtpPort, string smtpUser, string smtpPass, string emailUser)
         {
             MimeMessage cogshareMessage = new MimeMessage();
-            MailboxAddress fromAddress = new MailboxAddress("CogShare Admin", "kfechterbookstack@gmail.com");
+            MailboxAddress fromAddress = new MailboxAddress(emailUser, "kfechterbookstack@gmail.com");
             cogshareMessage.From.Add(fromAddress);
 
             MailboxAddress toAddress = MailboxAddress.Parse(email);
