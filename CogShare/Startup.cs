@@ -3,8 +3,10 @@ using CogShare.Domain.Interfaces;
 using CogShare.EFCore;
 using CogShare.EFCore.Repositories;
 using CogShare.EFCore.UnitOfWork;
+using CogShare.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,6 +47,9 @@ namespace CogShare
             services.AddTransient<IRequestRepository, RequestRepository>();
             services.AddTransient<IApplicationUserRepository, ApplicationUserRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<EmailSenderOptions>(Configuration.GetSection("EmailConfiguration"));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
         }
