@@ -35,13 +35,6 @@ namespace CogShare
 
             // services.SwaggerGen(); // Enable for API
 
-            /*
-             services.AddTransient<IEmailSender, EmailSender>();
-             services.Configure<AuthMessageSenderOptions>(options => 
-                Configuration.GetSection("SendGridEmailSettings").Bind(options)
-             );
-            */
-
             services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddTransient<IItemRepository, ItemRepository>();
             services.AddTransient<IRequestRepository, RequestRepository>();
@@ -51,6 +44,7 @@ namespace CogShare
             services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<EmailSenderOptions>(Configuration.GetSection("EmailConfiguration"));
 
+            services.AddTransient<IUserCommunicationService, UserCommunicationService>();
             services.AddDatabaseDeveloperPageExceptionFilter();
         }
 

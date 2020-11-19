@@ -20,7 +20,7 @@ namespace CogShare.Services
             return Execute(email, subject, message, Options.SMTPServer, Options.SMTPPort, Options.SMTPUser, Options.SMTPPassword);
         }
 
-        public Task SendEmailAsync(string email, string subject, string message, string emailUser)
+        public Task SendUserEmailAsync(string email, string subject, string message, string emailUser)
         {
             return Execute(email, subject, message, Options.SMTPServer, Options.SMTPPort, Options.SMTPUser, Options.SMTPPassword, emailUser);
         }

@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CogShare.EFCore.Migrations
 {
     [DbContext(typeof(CogShareContext))]
-    [Migration("20201116034747_InitialMigrationTakeTwo")]
-    partial class InitialMigrationTakeTwo
+    [Migration("20201119012900_FriendRelations")]
+    partial class FriendRelations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,9 +28,6 @@ namespace CogShare.EFCore.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("text");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -81,8 +78,6 @@ namespace CogShare.EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -91,6 +86,29 @@ namespace CogShare.EFCore.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("CogShare.Domain.Entities.Friendship", b =>
+                {
+                    b.Property<string>("User1Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("User2Id")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Accepted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("User1Id", "User2Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("User2Id");
+
+                    b.ToTable("Friendships");
                 });
 
             modelBuilder.Entity("CogShare.Domain.Entities.Item", b =>
@@ -307,11 +325,27 @@ namespace CogShare.EFCore.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("CogShare.Domain.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("CogShare.Domain.Entities.Friendship", b =>
                 {
                     b.HasOne("CogShare.Domain.Entities.ApplicationUser", null)
                         .WithMany("Friends")
                         .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("CogShare.Domain.Entities.ApplicationUser", "User1")
+                        .WithMany()
+                        .HasForeignKey("User1Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CogShare.Domain.Entities.ApplicationUser", "User2")
+                        .WithMany()
+                        .HasForeignKey("User2Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User1");
+
+                    b.Navigation("User2");
                 });
 
             modelBuilder.Entity("CogShare.Domain.Entities.Item", b =>

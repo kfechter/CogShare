@@ -1,0 +1,12 @@
+﻿@model FriendViewModel 
+
+@{
+    ViewData["Title"] = "Friends";
+}
+
+<h1>@Model.Requests.Count</h1>
+
+@foreach(var request in Model.Requests)
+{
+    <h1>@request.User1.Email</h1>
+}

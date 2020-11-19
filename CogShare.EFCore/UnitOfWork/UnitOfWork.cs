@@ -13,6 +13,7 @@ namespace CogShare.EFCore.UnitOfWork
             Items = new ItemRepository(_context);
             Requests = new RequestRepository(_context);
             Users = new ApplicationUserRepository(_context);
+            Friendships = new FriendshipRepository(_context);
         }
 
         public IItemRepository Items { get; private set; }
@@ -20,6 +21,8 @@ namespace CogShare.EFCore.UnitOfWork
         public IRequestRepository Requests { get; private set; }
 
         public IApplicationUserRepository Users { get; private set; }
+
+        public IFriendshipRepository Friendships { get; private set; }
 
         public int Complete()
         {

@@ -3,15 +3,17 @@ using System;
 using CogShare.EFCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CogShare.EFCore.Migrations
 {
     [DbContext(typeof(CogShareContext))]
-    partial class CogShareContextModelSnapshot : ModelSnapshot
+    [Migration("20201119005924_FriendRequests")]
+    partial class FriendRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,23 +90,16 @@ namespace CogShare.EFCore.Migrations
 
             modelBuilder.Entity("CogShare.Domain.Entities.Friendship", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
-
-                    b.Property<bool>("Accepted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("User1Id")
                         .HasColumnType("text");
 
                     b.Property<string>("User2Id")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<bool>("Accepted")
+                        .HasColumnType("boolean");
 
-                    b.HasIndex("User1Id");
+                    b.HasKey("User1Id", "User2Id");
 
                     b.HasIndex("User2Id");
 
@@ -328,12 +323,16 @@ namespace CogShare.EFCore.Migrations
             modelBuilder.Entity("CogShare.Domain.Entities.Friendship", b =>
                 {
                     b.HasOne("CogShare.Domain.Entities.ApplicationUser", "User1")
-                        .WithMany()
-                        .HasForeignKey("User1Id");
+                        .WithMany("Friends")
+                        .HasForeignKey("User1Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("CogShare.Domain.Entities.ApplicationUser", "User2")
                         .WithMany()
-                        .HasForeignKey("User2Id");
+                        .HasForeignKey("User2Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User1");
 
@@ -425,6 +424,11 @@ namespace CogShare.EFCore.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CogShare.Domain.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("Friends");
                 });
 #pragma warning restore 612, 618
         }

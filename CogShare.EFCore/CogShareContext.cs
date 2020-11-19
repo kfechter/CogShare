@@ -27,5 +27,9 @@ namespace CogShare.EFCore
         public DbSet<Item> Items { get; set; }
 
         public DbSet<Request> Requests { get; set; }
+
+        public virtual DbSet<ApplicationUser> ApplicationUser { get; set; }
+
+        public DbSet<Friendship> Friendships { get; set; }
     }
 }
