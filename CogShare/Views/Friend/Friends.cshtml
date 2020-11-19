@@ -4,9 +4,8 @@
     ViewData["Title"] = "Friends";
 }
 
-<h1>@Model.Requests.Count</h1>
+<h2>My Active Requests</h2>
+<!-- Table of Requests (delete for ones created, accept/decline for ones recieved)-->
 
-@foreach(var request in Model.Requests)
-{
-    <h1>@request.User1.Email</h1>
-}
+<h2>My Friends</h2>
+<!-- Table of friends, with links to request items and things, and link to delete friend-->
