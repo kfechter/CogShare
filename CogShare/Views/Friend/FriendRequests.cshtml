@@ -1,0 +1,105 @@
+﻿@using CogShare.Utilities 
+@model FriendRequestsViewModel
+
+@{
+    ViewData["Title"] = "Friend Requests";
+}
+
+@if(!Model.StatusMessage.IsNullWhiteSpaceOrEmpty())
+{
+    var dataClass = Model.ErrorState ? "alert alert-danger" : "alert alert-success";
+
+    <div class="@dataClass">
+        <strong>@Model.StatusMessage</strong>
+    </div>
+}
+
+@if (Model.Friendships.Count == 0)
+{
+    <h3>You have no pending/active friend requests</h3>
+}
+else
+{
+    if(Model.SentRequests.Count > 0)
+    {
+        <h3>Sent Requests</h3>
+        <div class="row">
+            <div class="col-auto">
+                <table class="table table-sm table-striped table-hover border-bottom table-light">
+                    <thead>
+                        <tr>
+                            <th>
+                                To
+                            </th>
+                            <th>
+                                Message
+                            </th>
+                            <th>
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var request in Model.SentRequests)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(model => request.User2.Email)</td>
+                                @if(request.Message.IsNullWhiteSpaceOrEmpty())
+                                {
+                                    <td>No Message</td>
+                                }
+                                else
+                                {
+                                    <td>@Html.DisplayFor(model => request.Message)</td>
+                                }
+                                <td><a asp-controller="Friend" asp-action="DeclineRequest" asp-route-Id="@request.Id" asp-route-action="delete">Delete Request</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    if(Model.RecievedRequests.Count > 0)
+    {
+        <h3>Recieved Requests</h3>
+        <div class="row">
+            <div class="col-auto">
+                <table class="table table-sm table-striped table-hover border-bottom table-light">
+                    <thead>
+                        <tr>
+                            <th>
+                                From
+                            </th>
+                            <th>
+                                Message
+                            </th>
+                            <th colspan="2">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var request in Model.RecievedRequests)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(model => request.User1.Email)</td>
+                                @if(request.Message.IsNullWhiteSpaceOrEmpty())
+                                {
+                                    <td>No Message</td>
+                                }
+                                else
+                                {
+                                    <td>@Html.DisplayFor(model => request.Message)</td>
+                                }
+                                <td><a asp-controller="Friend" asp-action="AcceptRequest" asp-route-Id="@request.Id">Accept</a></td>
+                                <td><a asp-controller="Friend" asp-action="DeclineRequest" asp-route-Id="@request.Id" asp-route-action="decline">Decline</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}

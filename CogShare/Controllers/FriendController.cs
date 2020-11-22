@@ -30,47 +30,63 @@ namespace CogShare.Controllers
         {
             var user = _userManager.GetUserAsync(HttpContext.User).Result.Id; // get the user ID and do the rest with db context.
             var friendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => (x.User1Id == user || x.User2Id == user));
-            var friendViewModel = new FriendViewModel(friendships.ToList());
+            var friendViewModel = new FriendViewModel(friendships.ToList(), user);
             return View(friendViewModel);
         }
 
-        [HttpPost]
-        public IActionResult CreateFriendRequest(FriendRequestViewModel model)
+        public IActionResult FriendRequests()
         {
-            var existingFriendShips = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => (x.User1Id == model.User1Id && x.User2Id == model.User2Id) || (x.User1Id == model.User2Id && x.User2Id == model.User1Id));
+            var user = _userManager.GetUserAsync(HttpContext.User).Result.Id; // get the user ID and do the rest with db context.
+            var friendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => (x.User1Id == user || x.User2Id == user));
+            var friendRequestViewModel = new FriendRequestsViewModel(friendships.ToList(), user);
+            return View(friendRequestViewModel);
+        }
+
+        public IActionResult AddFriend(string search)
+        {
             var user = _userManager.GetUserAsync(HttpContext.User).Result;
+            var existingFriendShips = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => (x.User1Id == user.Id || x.User2Id == user.Id) && (x.User1.UserName == search || x.User2.UserName == search) && (x.User1.Email == search || x.User2.Email == search));
 
             if (existingFriendShips.Any())
             {
-                return View("Friends", new FriendViewModel(true, "An existing or pending request already exists for this combination of users.", _cogShareContext.Friendships.Where(x => x.User1Id == user.Id || x.User2Id == user.Id).ToList()));
+                return View("Friends", new FriendViewModel(true, "An existing or pending request already exists for this combination of users.", _cogShareContext.Friendships.Where(x => x.User1Id == user.Id || x.User2Id == user.Id).ToList(), user.Id));
             }
 
-            var friendRequestee = _userManager.FindByIdAsync(model.User2Id).Result;
+            // search by username or email
+            var friend = _userManager.FindByEmailAsync(search).Result;
+            if(friend == null)
+            {
+                friend = _userManager.FindByNameAsync(search).Result;
+            }
+
+            if(friend == null)
+            {
+                return View("Friends", new FriendViewModel(true, "An existing or pending request already exists for this combination of users.", _cogShareContext.Friendships.Where(x => x.User1Id == user.Id || x.User2Id == user.Id).ToList(), user.Id));
+            }
 
             var friendShip = new Friendship()
             {
                 User1 = user,
-                User2 = friendRequestee,
+                User2 = friend,
                 User1Id = user.Id,
-                User2Id = friendRequestee.Id,
+                User2Id = friend.Id,
                 Accepted = false
             };
 
-            var emailSent = _communicationService.SendFriendRequest(friendRequestee.Email, user.UserName).IsCompletedSuccessfully;
+            var emailSent = _communicationService.SendFriendRequest(friend.Email, user.UserName).IsCompletedSuccessfully;
             if (emailSent)
             {
                 _cogShareContext.Friendships.Add(friendShip);
                 _cogShareContext.SaveChanges();
-                return View("Friends", new FriendViewModel(false, "Request has been created successfully", _cogShareContext.Friendships.Where(x => x.User1Id == user.Id || x.User2Id == user.Id).ToList()));
+                return View("Friends", new FriendViewModel(false, "Request has been created successfully", _cogShareContext.Friendships.Where(x => x.User1Id == user.Id || x.User2Id == user.Id).ToList(), user.Id));
             }
 
             var friendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => x.User1Id == user.Id || x.User2Id == user.Id);
-            var friendViewModel = new FriendViewModel(true, "An error occurred sending the request", friendships.ToList());
+            var friendViewModel = new FriendViewModel(true, "An error occurred sending the request", friendships.ToList(), user.Id);
             return View("Friends", friendViewModel);
         }
 
-        [HttpPost("{id}")]
-        public IActionResult AcceptRequest(int id, string userId)
+        public IActionResult AcceptRequest(int id)
         {
             var user = _userManager.GetUserAsync(HttpContext.User).Result;
 
@@ -80,8 +96,8 @@ namespace CogShare.Controllers
                 if(request == null)
                 {
                     var unmodifiedFriendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => x.User1Id == user.Id || x.User2Id == user.Id);
-                    var friendViewErrorModel = new FriendViewModel(true, "The request you tried to approve has been deleted", unmodifiedFriendships.ToList());
-                    return View("Friends", friendViewErrorModel);
+                    var friendViewErrorModel = new FriendRequestsViewModel(true, "The request you tried to approve has been deleted", unmodifiedFriendships.ToList(), user.Id);
+                    return View("FriendRequests", friendViewErrorModel);
                 }
 
                 request.Accepted = true;
@@ -89,21 +105,73 @@ namespace CogShare.Controllers
                 _cogShareContext.SaveChanges();
 
                 var modifiedFriendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => x.User1Id == user.Id || x.User2Id == user.Id);
-                var friendViewCompletedModel = new FriendViewModel(false, "The friend request has been accepted", modifiedFriendships.ToList());
+                var friendViewCompletedModel = new FriendRequestsViewModel(false, "The friend request has been accepted", modifiedFriendships.ToList(), user.Id);
                 _communicationService.AcceptFriendRequest(request);
-                return View(friendViewCompletedModel);
+                return View("FriendRequests", friendViewCompletedModel);
             }
             catch (Exception ex)
             {
                 var existingFriendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => x.User1Id == user.Id || x.User2Id == user.Id);
-                var friendViewErrorModel = new FriendViewModel(true, ex.Message, existingFriendships.ToList());
+                var friendViewErrorModel = new FriendRequestsViewModel(true, ex.Message, existingFriendships.ToList(), user.Id);
+                return View("FriendRequests", friendViewErrorModel);
+            }
+        }
+
+        public IActionResult DeclineRequest(int id, string action)
+        {
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
+            try
+            {
+                var request = _cogShareContext.Friendships.Where(x => x.Id == id).SingleOrDefault();
+                if (request == null)
+                {
+                    var unmodifiedFriendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => x.User1Id == user.Id || x.User2Id == user.Id);
+                    var friendViewErrorModel = new FriendRequestsViewModel(true, $"The request you tried to {action} could not be found", unmodifiedFriendships.ToList(), user.Id);
+                    return View("FriendRequests", friendViewErrorModel);
+                }
+
+                _cogShareContext.Friendships.Remove(request);
+                _cogShareContext.SaveChanges();
+
+                var modifiedFriendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => x.User1Id == user.Id || x.User2Id == user.Id);
+                var friendViewCompletedModel = new FriendRequestsViewModel(false, $"The friend request has been {action}d", modifiedFriendships.ToList(), user.Id);
+                return View("FriendRequests", friendViewCompletedModel);
+            }
+            catch (Exception ex)
+            {
+                var existingFriendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => x.User1Id == user.Id || x.User2Id == user.Id);
+                var friendViewErrorModel = new FriendRequestsViewModel(true, ex.Message, existingFriendships.ToList(), user.Id);
+                return View("FriendRequests", friendViewErrorModel);
+            }
+        }
+
+        public IActionResult DeleteFriend(int id)
+        {
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
+            try
+            {
+                var request = _cogShareContext.Friendships.Where(x => x.Id == id).SingleOrDefault();
+                if (request == null)
+                {
+                    var unmodifiedFriendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => x.User1Id == user.Id || x.User2Id == user.Id);
+                    var friendViewErrorModel = new FriendViewModel(true, "The friend you tried to delete could not be found", unmodifiedFriendships.ToList(), user.Id);
+                    return View("Friends", friendViewErrorModel);
+                }
+
+                _cogShareContext.Friendships.Remove(request);
+                _cogShareContext.SaveChanges();
+
+                var modifiedFriendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => x.User1Id == user.Id || x.User2Id == user.Id);
+                var friendViewCompletedModel = new FriendViewModel(false, "The friend has been deleted", modifiedFriendships.ToList(), user.Id);
+                return View("Friends", friendViewCompletedModel);
+            }
+            catch (Exception ex)
+            {
+                var existingFriendships = _cogShareContext.Friendships.Include(x => x.User1).Include(x => x.User2).Where(x => x.User1Id == user.Id || x.User2Id == user.Id);
+                var friendViewErrorModel = new FriendViewModel(true, ex.Message, existingFriendships.ToList(), user.Id);
                 return View("Friends", friendViewErrorModel);
             }
         }
 
-        public IActionResult DenyRequest()
-        {
-            return View("Friends" /*, friendModel*/);
-        }
     }
 }

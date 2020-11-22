@@ -12,30 +12,30 @@ namespace CogShare.Models
 
         public List<Friendship> Friendships { get; set; }
 
-        public List<Friendship> Requests { get; set; }
+        public string OwnerId { get; set; }
 
         public FriendViewModel()
         {
             Friendships = new List<Friendship>();
-            Requests = new List<Friendship>();
             ErrorState = false;
             StatusMessage = string.Empty;
+            OwnerId = string.Empty;
         }
 
-        public FriendViewModel(List<Friendship> friendships)
+        public FriendViewModel(List<Friendship> friendships, string ownerId)
         {
             ErrorState = false;
             StatusMessage = string.Empty;
-            Requests = friendships.Where(x => !x.Accepted).ToList();
             Friendships = friendships.Where(x => x.Accepted).ToList();
+            OwnerId = ownerId;
         }
 
-        public FriendViewModel(bool errorState, string statusMessage, List<Friendship> friendships)
+        public FriendViewModel(bool errorState, string statusMessage, List<Friendship> friendships, string ownerId)
         {
             ErrorState = errorState;
             StatusMessage = statusMessage;
-            Requests = friendships.Where(x => !x.Accepted).ToList();
             Friendships = friendships.Where(x => x.Accepted).ToList();
+            OwnerId = ownerId;
         }
     }
 }
