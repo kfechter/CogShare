@@ -5,7 +5,8 @@
 <h3>User Search</h3>
 <h5>Use this page to find users and send friend requests. Users that are already friends will not show in results.</h5>
 
-<input id="querytext" type="text" class="input-group-text" /> <input type="button" id="search" class="btn"  value="Search" data-url="@Url.Action("SearchUser", "Friend", new { searchQuery = "SEARCH_QUERY" })" />
-<div id="searchresults"/>
+<div class="input-group mb-2">
+    <input id="querytext" type="text" class="input-group-text" /> <input type="button" id="search" class="btn btn-outline-dark ml-1"  value="Search" data-url="@Url.Action("SearchUser", "Friend", new { searchQuery = "SEARCH_QUERY" })" />
+</div>
 
-<!-- Load partial after ajax search, the partial will load user results-->
+<div id="searchresults"/>
