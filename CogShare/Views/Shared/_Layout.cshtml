@@ -25,12 +25,12 @@
                     <ul class="navbar-nav flex-grow-1">
                         @if (SignInManager.IsSignedIn(User))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Item" asp-action="Items">My Inventory</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Requests">My Requests</a>
+                            <li class="dropdown nav-item">
+                                <a href="#" class="dropdown-toggle nav-link text-dark" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true"> <span class="nav-label">Inventory</span> <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Item" asp-action="Items">My Inventory</a></li>
+                                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Item" asp-action="Requests">Item Requests</a></li>
+                                </ul>
                             </li>
 
                             <li class="dropdown nav-item">
