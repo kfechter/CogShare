@@ -1,3 +1,63 @@
-﻿@{
+﻿@using CogShare.Utilities 
+@model ItemViewModel 
+
+@{
     ViewData["Title"] = "Inventory";
 }
+
+@if(!Model.StatusMessage.IsNullWhiteSpaceOrEmpty())
+{
+    var dataClass = Model.ErrorState ? "alert alert-danger" : "alert alert-success";
+
+    <div class="@dataClass">
+        <strong>@Model.StatusMessage</strong>
+    </div>
+}
+
+@if(Model.Items.Count == 0)
+{
+    <h3>You have no Items</h3>
+}
+else
+{
+    <h3>My Items</h3>
+    <div class="row">
+        <div class="col-auto">
+            <table class="table table-sm table-striped table-hover border-bottom table-light">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.Items[0].DisplayName)</th>
+                        <th>@Html.DisplayNameFor(model => model.Items[0].CanBorrow)</th>
+                        <th>@Html.DisplayNameFor(model => model.Items[0].Borrower)</th>
+                        <th>@Html.DisplayNameFor(model => model.Items[0].BorrowedDate)</th>
+                        <th>@Html.DisplayNameFor(model => model.Items[0].Consumable)</th>
+                        <th>@Html.DisplayNameFor(model => model.Items[0].QuantityOnHand)</th>
+                        <th colspan="2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var item in Model.Items)
+                    {
+                        var borrowerName = item.Borrower?.UserName;
+                        var borrowerDate = item.BorrowedDate?.ToShortDateString();
+                        var quantityOnHand = item.Consumable ? item.QuantityOnHand.ToString() : string.Empty;
+
+                        <tr>
+                            <td>@item.DisplayName</td>
+                            <td>@Html.CheckBoxFor(model => item.CanBorrow)</td>
+                            <td>@borrowerName</td>
+                            <td>@borrowerDate</td>
+                            <td>@Html.CheckBoxFor(model => item.Consumable)</td>
+                            <td>@quantityOnHand</td>
+                            <td><a asp-controller="Item" asp-action="EditItem" asp-route-itemId="@item.Id">Edit Item</a></td> <!-- Replace with edit dialog and view model-->
+                            <td><a asp-controller="Item" asp-action="DeleteItem" asp-route-itemId="@item.Id">Delete Item</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+
+
