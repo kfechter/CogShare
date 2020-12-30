@@ -7,5 +7,6 @@ namespace CogShare.Models
 {
     public class RequestViewModel
     {
+
     }
 }

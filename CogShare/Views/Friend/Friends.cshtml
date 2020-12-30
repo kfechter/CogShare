@@ -40,7 +40,7 @@ else
                             <tr>
                                 <td>@username</td>
                                 <td>@usermail</td>
-                                <td><a asp-controller="Request" asp-action="RequestItem" asp-route-userId="@userId">Request Item</a></td>
+                                <td><a asp-controller="Item" asp-action="RequestItem" asp-route-userId="@userId">Request Item</a></td>
                                 <td><a asp-controller="Friend" asp-action="DeleteFriend" asp-route-Id="@friendship.Id">Delete Friend</a></td>
                             </tr>
                         }

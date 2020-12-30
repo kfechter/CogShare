@@ -34,5 +34,14 @@ namespace CogShare.Controllers
         {
             return View();
         }
+
+        public IActionResult RequestItem(string userId)
+        {
+            var currentRequests = _cogShareContext.Requests.Where(x => x.RequestedItem.Owner.Id == userId).Select(x => x.RequestedItem.Id).ToList();
+            var availableItems = _cogShareContext.Items.Where(x => x.CanBorrow && !x.OnLoan && (!x.Consumable || x.QuantityOnHand > 0) && x.Owner.Id == userId && !currentRequests.Contains(x.Id)).ToList();
+            var requesteeUserName = _cogShareContext.ApplicationUser.Where(x => x.Id == userId).First().Email;
+            var itemRequestModel = new RequestItemViewModel(availableItems, requesteeUserName);
+            return View(itemRequestModel);
+        }
     }
 }
