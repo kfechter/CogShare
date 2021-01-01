@@ -54,10 +54,8 @@ namespace CogShare.Controllers
         public IActionResult CreateItem([FromForm] CreateItemViewModel newItem)
         {
             var user = _userManager.GetUserAsync(HttpContext.User).Result;
-            var newId = _cogShareContext.Items.Select(x => x.Id).Max() + 1;
             var inventoryItem = new Item()
             {
-                Id = newId,
                 DisplayName = newItem.DisplayName,
                 CanBorrow = newItem.CanBorrow,
                 Owner = user,
