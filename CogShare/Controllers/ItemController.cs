@@ -88,5 +88,10 @@ namespace CogShare.Controllers
 
             return View("Items", itemViewModel);
         }
+
+        public IActionResult SendItemRequest(int itemId)
+        {
+            return View();
+        }
     }
 }
