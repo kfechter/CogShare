@@ -61,7 +61,7 @@ else
         </div>
     }
 
-    if(Model.RecievedRequests.Count > 0)
+    if(Model.ReceivedRequests.Count > 0)
     {
         <h3>Recieved Requests</h3>
         <div class="row">
@@ -81,7 +81,7 @@ else
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(var request in Model.RecievedRequests)
+                        @foreach(var request in Model.ReceivedRequests)
                         {
                             <tr>
                                 <td>@Html.DisplayFor(model => request.User1.Email)</td>

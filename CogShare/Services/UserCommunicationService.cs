@@ -23,6 +23,22 @@ namespace CogShare.Services
             return SendUserNotification(friendship.User2.Email, messageSubject, messageBody, "Cogshare Admin");
         }
 
+        public Task SendItemRequest(Request request)
+        {
+            string messageSubject = request.RequestMessage;
+            string messageBody = $"{request.Requestor.Email} has requested an item from you, log in and go to requests to accept or decline";
+
+            return SendUserNotification(request.Requestee.Email, messageSubject, messageBody, "CogShare Admin");
+        }
+
+        public Task AcceptItemRequest(Request request)
+        {
+            string messageSubject = $"{request.Requestee.Email} has accepted your request to borrow an item";
+            string messageBody = $"Your request to borrow {request.RequestedItem.DisplayName} has been accepted.";
+            return SendUserNotification(request.Requestor.Email, messageSubject, messageBody, "CogShare Admin");
+
+        }
+
         public Task SendFriendRequest(string toEmail, string fromUser)
         {
             string messageSubject = $"Friend request from {fromUser}";

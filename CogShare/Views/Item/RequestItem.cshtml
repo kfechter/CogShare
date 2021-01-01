@@ -39,7 +39,7 @@ else
                         {
                             <tr>
                                 <td>@Html.DisplayFor(model => item.DisplayName)</td>
-                                <td><a asp-controller="Item" asp-action="SendItemRequest" asp-route-Id="@item.Id">Request Item</a></td>
+                                <td><a asp-controller="Item" asp-action="SendItemRequest" asp-route-itemId="@item.Id">Request Item</a></td>
                             </tr>
                         }
                     </tbody>

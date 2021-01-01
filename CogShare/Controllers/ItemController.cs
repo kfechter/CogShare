@@ -1,6 +1,7 @@
 ﻿using CogShare.Domain.Entities;
 using CogShare.EFCore;
 using CogShare.Models;
+using CogShare.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,12 +15,15 @@ namespace CogShare.Controllers
         private readonly ILogger<ItemController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly CogShareContext _cogShareContext;
+        private readonly IUserCommunicationService _communicationService;
 
-        public ItemController(ILogger<ItemController> logger, UserManager<ApplicationUser> userManager, CogShareContext cogShareContext)
+
+        public ItemController(ILogger<ItemController> logger, UserManager<ApplicationUser> userManager, IUserCommunicationService communicationService, CogShareContext cogShareContext)
         {
             _logger = logger;
             _userManager = userManager;
             _cogShareContext = cogShareContext;
+            _communicationService = communicationService;
         }
 
         public IActionResult Items()
@@ -32,7 +36,10 @@ namespace CogShare.Controllers
 
         public IActionResult Requests()
         {
-            return View();
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
+            var myRequests = _cogShareContext.Requests.Include(x => x.Requestee).Include(y => y.Requestor).Include(z => z.RequestedItem).Where(request => request.Requestee.Id == user.Id || request.Requestor.Id == user.Id).ToList();
+            var myRequestViewModel = new RequestViewModel(user.Id, myRequests);
+            return View("Requests", myRequestViewModel);
         }
 
         public IActionResult RequestItem(string userId)
@@ -91,7 +98,33 @@ namespace CogShare.Controllers
 
         public IActionResult SendItemRequest(int itemId)
         {
-            return View();
+            // Get item, and owner of item, then current user
+            var item = _cogShareContext.Items.Include(x => x.Owner).Where(y => y.Id == itemId).SingleOrDefault();
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
+
+            if (item == null)
+            {
+                var requests = _cogShareContext.Requests.Include(x => x.Requestee).Include(y => y.Requestor).Include(z => z.RequestedItem).Where(request => request.Requestee.Id == user.Id || request.Requestor.Id == user.Id).ToList();
+                var requestViewModel = new RequestViewModel(user.Id, requests, true, "The item could not be found");
+                return View("Requests", requestViewModel);
+            }
+
+            var itemRequest = new Request()
+            {
+                RequestedItem = item,
+                Requestor = user,
+                Requestee = item.Owner,
+                RequestMessage = $"{user.Email} has requested to borrow {item.DisplayName}"
+            };
+
+            _cogShareContext.Requests.Add(itemRequest);
+            _cogShareContext.SaveChanges();
+
+            _communicationService.SendItemRequest(itemRequest);
+
+            var myRequests = _cogShareContext.Requests.Include(x => x.Requestee).Include(y => y.Requestor).Include(z => z.RequestedItem).Where(request => request.Requestee.Id == user.Id || request.Requestor.Id == user.Id).ToList();
+            var myRequestViewModel = new RequestViewModel(user.Id, myRequests, true, "The item could not be found");
+            return View("Requests", myRequestViewModel);
         }
     }
 }

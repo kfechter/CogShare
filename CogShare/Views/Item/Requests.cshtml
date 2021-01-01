@@ -1,3 +1,100 @@
-﻿@{
+﻿@using CogShare.Utilities 
+@model RequestViewModel
+
+@{
     ViewData["Title"] = "Requests";
+}
+
+@if(!Model.StatusMessage.IsNullWhiteSpaceOrEmpty())
+{
+    var dataClass = Model.ErrorState ? "alert alert-danger" : "alert alert-success";
+
+    <div class="@dataClass">
+        <strong>@Model.StatusMessage</strong>
+    </div>
+}
+
+
+@if (Model.Requests.Count == 0)
+{
+    <h3>You have no pending/active item requests</h3>
+}
+else
+{
+     if(Model.SentRequests.Count > 0)
+    {
+        <h3>Sent Requests</h3>
+        <div class="row">
+            <div class="col-auto">
+                <table class="table table-sm table-striped table-hover border-bottom table-light">
+                    <thead>
+                        <tr>
+                            <th>
+                                Item Owner
+                            </th>
+                            <th>
+                                Item Name
+                            </th>
+                            <th>
+                                Requested On
+                            </th>
+                            <th>
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var request in Model.SentRequests)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(model => request.Requestee.Email)</td>
+                                <td>@Html.DisplayFor(model => request.RequestedItem.DisplayName)</td>
+                                <td>@Html.DisplayFor(model => request.Created)</td>
+                                <td><a asp-controller="Item" asp-action="CancelRequest" asp-route-Id="@request.Id" asp-route-action="delete">Delete Request</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+      if(Model.ReceivedRequests.Count > 0)
+    {
+        <h3>Recieved Requests</h3>
+        <div class="row">
+            <div class="col-auto">
+                <table class="table table-sm table-striped table-hover border-bottom table-light">
+                    <thead>
+                        <tr>
+                            <th>
+                                Requested Item
+                            </th>
+                            <th>
+                                Requested By
+                            </th>
+                            <th>
+                                Requested On
+                            </th>
+                            <th colspan="2">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var request in Model.ReceivedRequests)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(model => request.RequestedItem.DisplayName)</td>
+                                <td>@Html.DisplayFor(model => request.Requestor.Email)</td>
+                                <td>@Html.DisplayFor(model => request.Created)</td>
+                                <td><a asp-controller="Item" asp-action="AcceptRequest" asp-route-Id="@request.Id">Accept</a></td>
+                                <td><a asp-controller="Item" asp-action="DeclineRequest" asp-route-Id="@request.Id" asp-route-action="decline">Decline</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 }

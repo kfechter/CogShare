@@ -14,6 +14,10 @@ namespace CogShare.Services
 
         Task AcceptFriendRequest(Friendship friendShip);
 
+        Task SendItemRequest(Request request);
+
+        Task AcceptItemRequest(Request request);
+
         // Task SendUserPush(string pushMessage, string userNotificationsId); // Possibly this
     }
 }

@@ -22,7 +22,7 @@ namespace CogShare.Models
             }
         }
 
-        public List<Friendship> RecievedRequests 
+        public List<Friendship> ReceivedRequests
         { 
             get
             {
