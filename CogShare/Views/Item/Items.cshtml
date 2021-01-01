@@ -17,10 +17,13 @@
 @if(Model.Items.Count == 0)
 {
     <h3>You have no Items</h3>
+    <!-- Add an "Add items Button" -->
+    @Html.ActionLink("Add Item", "CreateItem", "Item");
 }
 else
 {
     <h3>My Items</h3>
+    @Html.ActionLink("Add Item", "CreateItem", "Item");
     <div class="row">
         <div class="col-auto">
             <table class="table table-sm table-striped table-hover border-bottom table-light">

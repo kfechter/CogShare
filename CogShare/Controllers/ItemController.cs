@@ -43,5 +43,52 @@ namespace CogShare.Controllers
             var itemRequestModel = new RequestItemViewModel(availableItems, requesteeUserName);
             return View(itemRequestModel);
         }
+
+        [HttpGet]
+        public IActionResult CreateItem()
+        {
+            return View(new CreateItemViewModel());
+        }
+
+        [HttpPost]
+        public IActionResult CreateItem([FromForm] CreateItemViewModel newItem)
+        {
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
+            var newId = _cogShareContext.Items.Select(x => x.Id).Max() + 1;
+            var inventoryItem = new Item()
+            {
+                Id = newId,
+                DisplayName = newItem.DisplayName,
+                CanBorrow = newItem.CanBorrow,
+                Owner = user,
+                Consumable = newItem.Consumable,
+                QuantityOnHand = newItem.QuantityOnHand
+            };
+
+            _cogShareContext.Items.Add(inventoryItem);
+            _cogShareContext.SaveChanges();
+
+            var items = _cogShareContext.Items.Include(x => x.Borrower).Where(x => x.Owner == user).ToList();
+            var itemViewModel = new ItemViewModel(false, "Item Created Successfully", items);
+
+            return View("Items", itemViewModel);
+        }
+
+        public IActionResult DeleteItem(int itemId)
+        {
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
+
+            var item = _cogShareContext.Items.Where(x => x.Id == itemId).FirstOrDefault();
+            if(item != null)
+            {
+                _cogShareContext.Items.Remove(item);
+                _cogShareContext.SaveChanges();
+            }
+
+            var items = _cogShareContext.Items.Include(x => x.Borrower).Where(x => x.Owner == user).ToList();
+            var itemViewModel = new ItemViewModel(false, "Item Deleted Successfully", items);
+
+            return View("Items", itemViewModel);
+        }
     }
 }
