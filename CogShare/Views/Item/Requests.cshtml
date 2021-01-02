@@ -88,8 +88,8 @@ else
                                 <td>@Html.DisplayFor(model => request.RequestedItem.DisplayName)</td>
                                 <td>@Html.DisplayFor(model => request.Requestor.Email)</td>
                                 <td>@Html.DisplayFor(model => request.Created)</td>
-                                <td><a asp-controller="Item" asp-action="AcceptRequest" asp-route-Id="@request.Id">Accept</a></td>
-                                <td><a asp-controller="Item" asp-action="DeclineRequest" asp-route-Id="@request.Id" asp-route-action="decline">Decline</a></td>
+                                <td><a asp-controller="Item" asp-action="AcceptRequest" asp-route-requestId="@request.Id">Accept</a></td>
+                                <td><a asp-controller="Item" asp-action="DeclineRequest" asp-route-requestId="@request.Id" asp-route-action="decline">Decline</a></td>
                             </tr>
                         }
                     </tbody>

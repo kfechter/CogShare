@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 
 namespace CogShare.Controllers
@@ -123,8 +124,54 @@ namespace CogShare.Controllers
             _communicationService.SendItemRequest(itemRequest);
 
             var myRequests = _cogShareContext.Requests.Include(x => x.Requestee).Include(y => y.Requestor).Include(z => z.RequestedItem).Where(request => request.Requestee.Id == user.Id || request.Requestor.Id == user.Id).ToList();
-            var myRequestViewModel = new RequestViewModel(user.Id, myRequests, true, "The item could not be found");
+            var myRequestViewModel = new RequestViewModel(user.Id, myRequests, false, $"Request for {item.DisplayName} has been sent to {item.Owner.Email}");
             return View("Requests", myRequestViewModel);
+        }
+
+        public IActionResult AcceptRequest(int requestId)
+        {
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
+            var request = _cogShareContext.Requests.Include(x => x.Requestee).Include(y => y.Requestor).Include(z => z.RequestedItem).Where(x => x.Id == requestId).SingleOrDefault();
+            if(request == null)
+            {
+                var myRequests = _cogShareContext.Requests.Include(x => x.Requestee).Include(y => y.Requestor).Include(z => z.RequestedItem).Where(request => request.Requestee.Id == user.Id || request.Requestor.Id == user.Id).ToList();
+                var requestViewModel = new RequestViewModel(user.Id, myRequests, true, "An Error has occurred");
+                return View("Requests", requestViewModel);
+            }
+
+            var item = _cogShareContext.Items.Where(x => x.Id == request.Id).SingleOrDefault();
+
+            item.BorrowedDate = DateTime.Now;
+            item.Borrower = request.Requestor;
+            // item.QuantityOnHand -= 1; (eventually work this out)
+
+            _cogShareContext.Items.Update(item);
+            _cogShareContext.Requests.Remove(request);
+            _communicationService.AcceptItemRequest(request);
+            _cogShareContext.SaveChanges();
+
+            var requests = _cogShareContext.Requests.Include(x => x.Requestee).Include(y => y.Requestor).Include(z => z.RequestedItem).Where(request => request.Requestee.Id == user.Id || request.Requestor.Id == user.Id).ToList();
+            var viewModel = new RequestViewModel(user.Id, requests, false, "The request has been accepted");
+            return View("Requests", viewModel);
+        }
+
+        public IActionResult DeclineRequest(int requestId)
+        {
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
+            var request = _cogShareContext.Requests.Where(x => x.Id == requestId).SingleOrDefault();
+            if (request == null)
+            {
+                var myRequests = _cogShareContext.Requests.Include(x => x.Requestee).Include(y => y.Requestor).Include(z => z.RequestedItem).Where(request => request.Requestee.Id == user.Id || request.Requestor.Id == user.Id).ToList();
+                var requestViewModel = new RequestViewModel(user.Id, myRequests, true, "An Error has occurred");
+                return View("Requests", requestViewModel);
+            }
+
+            _cogShareContext.Requests.Remove(request);
+            _cogShareContext.SaveChanges();
+
+            var requests = _cogShareContext.Requests.Include(x => x.Requestee).Include(y => y.Requestor).Include(z => z.RequestedItem).Where(request => request.Requestee.Id == user.Id || request.Requestor.Id == user.Id).ToList();
+            var viewModel = new RequestViewModel(user.Id, requests, false, "The request has been accepted");
+            return View("Requests", viewModel);
         }
     }
 }
