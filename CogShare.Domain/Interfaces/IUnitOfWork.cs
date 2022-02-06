@@ -1,16 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CogShare.Domain.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IApplicationUserRepository Users { get; }
+        IDocumentationRepository Docs { get; }
 
-        IItemRepository Items { get; }
+        IExternalProjectRepository ExternalProjects { get; }
 
-        IRequestRepository Requests { get; }
+        IHardwareRepository Hardware { get; }
+
+        IPersonalProjectRepository PersonalProjects { get; }
+
+        ISoftwareLibraryRepository SoftwareLibraries { get; }
+
+        ISoftwareRepository Software { get; }
+
+        ICogShareUserRepository CogShareUsers { get; }
 
         int Complete();
     }

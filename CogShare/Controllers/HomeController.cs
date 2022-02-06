@@ -1,6 +1,5 @@
 ﻿using CogShare.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 namespace CogShare.Controllers
@@ -15,11 +14,6 @@ namespace CogShare.Controllers
         }
 
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
         {
             return View();
         }

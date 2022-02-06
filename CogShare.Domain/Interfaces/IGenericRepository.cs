@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
+﻿using System.Linq.Expressions;
 
 namespace CogShare.Domain.Interfaces
 {
-    public interface IGenericRepository<T> where T: class
+    public interface IGenericRepository<T> where T : class
     {
         T GetById(int id);
         IEnumerable<T> GetAll();

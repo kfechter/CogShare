@@ -1,4 +1,6 @@
-﻿@inject SignInManager<ApplicationUser> SignInManager
+﻿@using CogShare.Domain.Entities;
+
+@inject SignInManager<CogShareUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

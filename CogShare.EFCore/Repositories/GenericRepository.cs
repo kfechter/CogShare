@@ -1,9 +1,5 @@
 ﻿using CogShare.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace CogShare.EFCore.Repositories
 {
@@ -15,7 +11,6 @@ namespace CogShare.EFCore.Repositories
         {
             _context = context;
         }
-
         public void Add(T entity)
         {
             _context.Set<T>().Add(entity);
@@ -35,8 +30,11 @@ namespace CogShare.EFCore.Repositories
         {
             return _context.Set<T>().ToList();
         }
+
+
         public T GetById(int id)
         {
+#nullable disable
             return _context.Set<T>().Find(id);
         }
 
@@ -49,6 +47,5 @@ namespace CogShare.EFCore.Repositories
         {
             _context.Set<T>().RemoveRange(entities);
         }
-
     }
 }

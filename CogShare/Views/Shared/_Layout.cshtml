@@ -1,23 +1,25 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using CogShare.Domain.Entities 
-@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
+@using CogShare.Domain.Entities
+
+@inject SignInManager<CogShareUser> SignInManager
+@inject UserManager<CogShareUser> UserManager
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>@ViewData["Title"] - CogShare</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CogShare.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
+            <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CogShare</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -25,21 +27,23 @@
                     <ul class="navbar-nav flex-grow-1">
                         @if (SignInManager.IsSignedIn(User))
                         {
-                            <li class="dropdown nav-item">
-                                <a href="#" class="dropdown-toggle nav-link text-dark" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true"> <span class="nav-label">Inventory</span> <span class="caret"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Item" asp-action="Items">My Inventory</a></li>
-                                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Item" asp-action="Requests">Item Requests</a></li>
-                                </ul>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Software" asp-action="Software">Software</a>
                             </li>
-
-                            <li class="dropdown nav-item">
-                                <a href="#" class="dropdown-toggle nav-link text-dark" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true"> <span class="nav-label">Friends</span> <span class="caret"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Friend" asp-action="Friends">My Friends</a></li>
-                                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Friend" asp-action="FriendRequests">Friend Requests</a></li>
-                                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Friend" asp-action="UserSearch">Search Users</a></li>
-                                </ul>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Hardware" asp-action="Hardware">Hardware</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Library" asp-action="Library">Software Libraries</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Reference" asp-action="Reference">Docs/Reference</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Project" asp-action="Project">External Projects</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="PersonalProject" asp-action="PersonalProject">Personal Projects</a>
                             </li>
                         }
                     </ul>
@@ -56,22 +60,12 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; @DateTime.Now.Year - CogShare - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; @DateTime.Now.Year.ToString() - CogShare
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script type="text/javascript">
-        $(function () {
-            $('#search').click(function (e) {
-                var url = $(this).data(url).url;
-                url = url.replace("SEARCH_QUERY", $("#querytext").val());
-                console.log(url);
-                $('#searchresults').load(url);
-            });
-        });
-    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

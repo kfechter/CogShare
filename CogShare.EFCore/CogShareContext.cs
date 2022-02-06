@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CogShare.EFCore
 {
-    public class CogShareContext : IdentityDbContext<ApplicationUser>
+    public class CogShareContext : IdentityDbContext<CogShareUser>
     {
         public CogShareContext(DbContextOptions<CogShareContext> options)
         : base(options)
@@ -14,22 +14,21 @@ namespace CogShare.EFCore
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            builder.Entity<Request>()
-                .Property(s => s.Created)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            builder.Entity<Item>()
-                .Property(s => s.Created)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         }
 
-        public DbSet<Item> Items { get; set; }
+        public virtual DbSet<CogShareUser>? CogShareUser { get; set; }
 
-        public DbSet<Request> Requests { get; set; }
+        public DbSet<Documentation>? Docs { get; set; }
 
-        public virtual DbSet<ApplicationUser> ApplicationUser { get; set; }
+        public DbSet<ExternalProject>? ExternalProjects { get; set; }
 
-        public DbSet<Friendship> Friendships { get; set; }
+        public DbSet<Hardware>? Hardware { get; set; }
+
+        public DbSet<PersonalProject>? PersonalProjects { get; set; }
+
+        public DbSet<Software>? Software { get; set; }
+
+        public DbSet<SoftwareLibrary>? SoftwareLibraries { get; set; }
+
     }
 }

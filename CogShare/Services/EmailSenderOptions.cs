@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace CogShare.Services
+﻿namespace CogShare.Services
 {
     public class EmailSenderOptions
     {
-        public string SMTPServer { get; set; }
+        public string? SMTPServer { get; set; }
 
         public int SMTPPort { get; set; }
 
-        public string SMTPUser { get; set; }
+        public string? SMTPUser { get; set; }
 
-        public string SMTPPassword { get; set; }
+        public string? SMTPPassword { get; set; }
     }
 }

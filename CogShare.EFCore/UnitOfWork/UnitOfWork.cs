@@ -1,5 +1,5 @@
-﻿using CogShare.Domain.Interfaces;
-using CogShare.EFCore.Repositories;
+﻿using CogShare.EFCore.Repositories;
+using CogShare.Domain.Interfaces;
 
 namespace CogShare.EFCore.UnitOfWork
 {
@@ -10,19 +10,28 @@ namespace CogShare.EFCore.UnitOfWork
         public UnitOfWork(CogShareContext context)
         {
             _context = context;
-            Items = new ItemRepository(_context);
-            Requests = new RequestRepository(_context);
-            Users = new ApplicationUserRepository(_context);
-            Friendships = new FriendshipRepository(_context);
+            Docs = new DocumentationRepository(_context);
+            ExternalProjects = new ExternalProjectRepository(_context);
+            Hardware = new HardwareRepository(_context);
+            PersonalProjects = new PersonalProjectRepository(_context);
+            SoftwareLibraries = new SoftwareLibraryRepository(_context);
+            Software = new SoftwareRepository(_context);
+            CogShareUsers = new CogShareUserRepository(_context);
         }
 
-        public IItemRepository Items { get; private set; }
+        public ICogShareUserRepository CogShareUsers { get; private set; }
 
-        public IRequestRepository Requests { get; private set; }
+        public IDocumentationRepository Docs { get; private set; }
 
-        public IApplicationUserRepository Users { get; private set; }
+        public IExternalProjectRepository ExternalProjects { get; private set; }
 
-        public IFriendshipRepository Friendships { get; private set; }
+        public IHardwareRepository Hardware { get; private set; }
+
+        public IPersonalProjectRepository PersonalProjects { get; private set; }
+
+        public ISoftwareLibraryRepository SoftwareLibraries { get; private set; }
+
+        public ISoftwareRepository Software { get; private set; }
 
         public int Complete()
         {
@@ -32,6 +41,7 @@ namespace CogShare.EFCore.UnitOfWork
         public void Dispose()
         {
             _context.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
